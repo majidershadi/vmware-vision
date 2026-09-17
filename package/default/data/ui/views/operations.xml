@@ -1,0 +1,82 @@
+<form version="1.1" theme="dark" stylesheet="vision.css">
+  <label>Operations and Security</label>
+  <description>Review alarms, failed tasks, authentication and infrastructure activity carried in vCenter and Aria syslog. Missing categories indicate either no activity or a forwarding/coverage gap.</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="time">
+      <label>Time window</label>
+      <default>
+        <earliest>-24h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="vc">
+      <label>vCenter / origin (* = all)</label>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+        <div class="vv-hero">
+          <div class="vv-tag">VMware activity and changes</div>
+          <h2>Operations and Security</h2>
+          <p>Review alarms, failed tasks, authentication and infrastructure activity carried in vCenter and Aria syslog. Missing categories indicate either no activity or a forwarding/coverage gap.</p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Alarms and availability</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | search category IN (alarm,availability,infrastructure) | sort 200 - _time | table _time vcenter vm_name esxi_host severity vmware_action status message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Authentication activity</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | search category=authentication | sort 200 - _time | table _time vcenter user src_ip vmware_action status message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Permission and role changes</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | search category=security | sort 200 - _time | table _time vcenter user event_type message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Tasks and failures</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | search category=task OR status=failure | sort 200 - _time | table _time vm_name user task_id event_chain_id event_type status message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

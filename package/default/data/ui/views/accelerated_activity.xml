@@ -1,0 +1,64 @@
+<form version="1.1" theme="dark" stylesheet="vision.css">
+  <label>Accelerated Activity</label>
+  <description>Opt-in summary view. Enable and validate VMware Vision Activity acceleration first. Only summarized events are shown; recent or older unsummarized data is omitted. Counts include repeated delivery and are not the deduplicated audit totals.</description>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="time" token="time">
+      <label>Time window</label>
+      <default>
+        <earliest>-24h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="vc">
+      <label>Exact vCenter / origin (* = all)</label>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <search id="activity_summary">
+    <query>| tstats summariesonly=true count AS events FROM datamodel=VMware_Vision_Activity.Activity WHERE Activity.vcenter=$vc|s$ BY _time span=1h Activity.category Activity.vmware_action Activity.status | rename Activity.* AS *</query>
+    <earliest>$time.earliest$</earliest>
+    <latest>$time.latest$</latest>
+  </search>
+  <row>
+    <panel>
+      <single>
+        <title>Summarized event records</title>
+        <search base="activity_summary">
+          <query>stats sum(events) AS events</query>
+        </search>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Activity by category</title>
+        <search base="activity_summary">
+          <query>stats sum(events) AS count by category</query>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Recorded actions over time</title>
+        <search base="activity_summary">
+          <query>timechart span=1h sum(events) by vmware_action limit=15</query>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Summary buckets returned</title>
+        <search base="activity_summary">
+          <query>stats min(_time) AS first_bucket max(_time) AS last_bucket sum(events) AS events | convert ctime(first_bucket) ctime(last_bucket)</query>
+        </search>
+      </table>
+    </panel>
+  </row>
+</form>

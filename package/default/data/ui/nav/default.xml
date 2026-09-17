@@ -1,0 +1,10 @@
+<nav search_view="search">
+  <view name="overview" default="true" />
+  <view name="accelerated_activity" />
+  <view name="vm_history" />
+  <view name="changes" />
+  <view name="operations" />
+  <view name="coverage" />
+  <view name="configuration" />
+  <view name="search" />
+</nav>

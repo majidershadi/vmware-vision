@@ -1,0 +1,118 @@
+<form version="1.1" theme="dark" stylesheet="vision.css">
+  <label>Setup and Coverage</label>
+  <description>Default window: one hour. Diagnostics are recognized service logs, not failed VM extraction. Identity coverage counts VM event candidates only. No input data is dropped.</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="time">
+      <label>Time window</label>
+      <default>
+        <earliest>-1h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="vc">
+      <label>vCenter / origin (* = all)</label>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <search id="coverage_totals">
+    <query>`vmware_vision_events` | search vcenter=$vc|s$ | stats count AS events by parser_status parser_format record_kind</query>
+    <earliest>$time.earliest$</earliest>
+    <latest>$time.latest$</latest>
+  </search>
+  <row>
+    <panel>
+      <html>
+        <div class="vv-hero">
+          <div class="vv-tag">VMware activity and changes</div>
+          <h2>Setup and Coverage</h2>
+          <p>Send vCenter, ESXi or Aria-forwarded syslog through your existing collector. Assign the VMware Vision sourcetypes and set the vmware_vision_indexes macro. Sample data is never enabled by the app package.</p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <div class="vv-note">
+          <h3>Onboard sources</h3>
+          <p>Default search scope: <code>index=vmware</code>. Set the macro <code>vmware_vision_indexes</code> under Settings / Advanced search / Search macros when using other indexes.</p>
+          <p>Use <code>vmware:vision:vcenter</code> for vCenter event syslog; <code>vmware:vision:aria</code> for Aria-forwarded syslog; <code>vmware:vision:esxi</code> for ESXi; <code>vmware:vision:json</code> for supported JSON event envelopes. Existing data requires the matching automatic lookup stanza on its current sourcetype.</p>
+          <p>Use a durable syslog receiver and monitored files or HEC for production. The deploy script configures TCP 1514 for vCenter, 1515 for Aria and 1516 for ESXi on the lab server. Restrict network access to your senders.</p>
+          <p>The parser supports vCenter bracketed events, explicit JSON event fields and quoted key/value fields. Unknown ESXi and Aria messages remain searchable. Aria Operations appliance logs alone do not provide all VM lifecycle events.</p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Source freshness and volume</title>
+        <search>
+          <query>`vmware_vision_events` | search vcenter=$vc|s$ | stats count max(_time) AS last_seen by host sourcetype | eval age_minutes=round((now()-last_seen)/60,1) | convert ctime(last_seen)</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Parser coverage</title>
+        <option name="charting.chart">bar</option>
+        <search base="coverage_totals">
+          <query>chart sum(events) over parser_status by parser_format</query>
+        </search>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Unmapped event samples</title>
+        <search>
+          <query>`vmware_vision_events` | search vcenter=$vc|s$ parser_status IN (unmapped,unmapped_event_type) | sort 200 - _time | table _time host sourcetype event_type parser_status _raw</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>VM event identity quality</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where match(event_type,"^(Vm|DrsVm)") OR len(vm_key)&gt;0 | stats count by identity_quality</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Reconfiguration detail coverage</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | search vmware_action=reconfigured | eval detail=if(len(change_details)&gt;0,"details supplied","message only") | stats count by detail</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Events versus diagnostic traffic</title>
+        <search base="coverage_totals">
+          <query>stats sum(events) AS count by record_kind</query>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,25 @@
+{
+    "meta": {
+        "name": "vmware_vision",
+        "restRoot": "vmware_vision",
+        "version": "1.1.0",
+        "displayName": "VMware Vision for Splunk",
+        "schemaVersion": "0.0.10",
+        "supportedPythonVersion": [
+            "3.9",
+            "3.13"
+        ],
+        "checkForUpdates": false
+    },
+    "pages": {
+        "configuration": {
+            "title": "Configuration",
+            "description": "UCC logging settings. Use the Setup and Coverage dashboard for syslog onboarding and search scope.",
+            "tabs": [
+                {
+                    "type": "loggingTab"
+                }
+            ]
+        }
+    }
+}

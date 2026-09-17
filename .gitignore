@@ -1,0 +1,13 @@
+.venv/
+TA-vmware-vision/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+output/
+dist/
+reports/
+backups/
+.env
+*.log
+*.pem
+*.key

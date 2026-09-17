@@ -1,0 +1,86 @@
+{
+  "modelName": "VMware_Vision_Activity",
+  "displayName": "VMware Vision Activity",
+  "description": "Optional aggregate acceleration. Counts received event records, including duplicate delivery. No inventory or raw-message detail.",
+  "objectNameList": [
+    "Activity"
+  ],
+  "objects": [
+    {
+      "objectName": "Activity",
+      "displayName": "Activity",
+      "parentName": "BaseEvent",
+      "constraints": [
+        {
+          "search": "`vmware_vision_events` record_kind=event"
+        }
+      ],
+      "fields": [
+        {
+          "fieldName": "vcenter",
+          "displayName": "vcenter",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vmware_action",
+          "displayName": "vmware_action",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "category",
+          "displayName": "category",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "status",
+          "displayName": "status",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "event_type",
+          "displayName": "event_type",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "record_kind",
+          "displayName": "record_kind",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "parser_status",
+          "displayName": "parser_status",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        }
+      ],
+      "calculations": []
+    }
+  ]
+}

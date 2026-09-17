@@ -1,0 +1,87 @@
+<form version="1.1" theme="dark" stylesheet="vision.css">
+  <label>VM History</label>
+  <description>Trace a VM through creation, changes and removal. Name-only identities can split after a rename or merge reused names; prefer VM IDs. Last-state rows only use completed state-changing events within this time window.</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="time">
+      <label>Time window</label>
+      <default>
+        <earliest>-24h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="vc">
+      <label>vCenter / origin (* = all)</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="vm">
+      <label>Exact VM name or ID (* = all)</label>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+        <div class="vv-hero">
+          <div class="vv-tag">VMware activity and changes</div>
+          <h2>VM History</h2>
+          <p>Trace a VM through creation, changes and removal. Name-only identities can split after a rename or merge reused names; prefer VM IDs. Last-state rows only use completed state-changing events within this time window.</p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Last observed state</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where $vm|s$="*" OR lower(vm_name)=lower($vm|s$) OR vm_id=$vm|s$ | where len(vm_key)&gt;0 AND len(observed_state)&gt;0 AND status="success" | sort 0 - _time - event_id | dedup vm_key | table _time vcenter vm_name vm_id observed_state user identity_quality</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Lifecycle timeline</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where $vm|s$="*" OR lower(vm_name)=lower($vm|s$) OR vm_id=$vm|s$ | where len(vm_key)&gt;0 | timechart count by vmware_action limit=15</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Complete VM event trail</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where $vm|s$="*" OR lower(vm_name)=lower($vm|s$) OR vm_id=$vm|s$ | where len(vm_key)&gt;0 | sort 200 - _time - event_id | table _time vm_name vm_id event_type vmware_action status user esxi_host change_details message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Last change per VM</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where $vm|s$="*" OR lower(vm_name)=lower($vm|s$) OR vm_id=$vm|s$ | search category IN (configuration,lifecycle,power,migration,snapshot) status=success | where len(vm_key)&gt;0 | sort 0 - _time - event_id | dedup vm_key | table _time vcenter vm_name vm_id vmware_action user change_details message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,86 @@
+<form version="1.1" theme="dark" stylesheet="vision.css">
+  <label>Configuration and Change Audit</label>
+  <description>Review successful reconfigurations, renames, moves and snapshot operations. Change fields and old/new values appear only when supplied by the event; task requests remain separately identified.</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="time">
+      <label>Time window</label>
+      <default>
+        <earliest>-24h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="vc">
+      <label>vCenter / origin (* = all)</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="vm">
+      <label>Exact VM name or ID (* = all)</label>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+        <div class="vv-hero">
+          <div class="vv-tag">VMware activity and changes</div>
+          <h2>Configuration and Change Audit</h2>
+          <p>Review successful reconfigurations, renames, moves and snapshot operations. Change fields and old/new values appear only when supplied by the event; task requests remain separately identified.</p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Configuration changes</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where $vm|s$="*" OR lower(vm_name)=lower($vm|s$) OR vm_id=$vm|s$ | search category=configuration | sort 200 - _time | table _time vcenter vm_name vm_id user vmware_action status change_fields old_value new_value change_details message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Migrations and relocations</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where $vm|s$="*" OR lower(vm_name)=lower($vm|s$) OR vm_id=$vm|s$ | search category=migration | sort 200 - _time | table _time vm_name user esxi_host datastore vmware_action status message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Snapshot activity</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where $vm|s$="*" OR lower(vm_name)=lower($vm|s$) OR vm_id=$vm|s$ | search category=snapshot | sort 200 - _time | table _time vm_name user vmware_action status message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Deletion and unregister audit</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where $vm|s$="*" OR lower(vm_name)=lower($vm|s$) OR vm_id=$vm|s$ | search vmware_action IN (deleted,unregistered) | sort 200 - _time | table _time vcenter vm_name vm_id user vmware_action message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

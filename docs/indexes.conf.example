@@ -1,0 +1,4 @@
+[vmware]
+homePath = $SPLUNK_DB/vmware/db
+coldPath = $SPLUNK_DB/vmware/colddb
+thawedPath = $SPLUNK_DB/vmware/thaweddb

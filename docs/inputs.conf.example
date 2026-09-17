@@ -1,0 +1,10 @@
+# Copy relevant stanzas to a collector's local/inputs.conf. Create the vmware index on indexers.
+[monitor:///var/log/remote/vcenter/*.log]
+index = vmware
+sourcetype = vmware:vision:vcenter
+disabled = 0
+
+[monitor:///var/log/remote/aria/*.log]
+index = vmware
+sourcetype = vmware:vision:aria
+disabled = 0

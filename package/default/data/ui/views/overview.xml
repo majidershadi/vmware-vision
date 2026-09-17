@@ -1,0 +1,140 @@
+<form version="1.1" theme="dark" stylesheet="vision.css">
+  <label>VMware Overview</label>
+  <description>Recorded VMware events. Diagnostic service messages are excluded from audit panels. Counts deduplicate forwarded copies; latest activity fields come from one event. Default window: 24 hours.</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="time">
+      <label>Time window</label>
+      <default>
+        <earliest>-24h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="vc">
+      <label>vCenter / origin (* = all)</label>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <search id="overview_activity">
+    <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | bin _time span=1h | stats count AS events by _time category vmware_action</query>
+    <earliest>$time.earliest$</earliest>
+    <latest>$time.latest$</latest>
+  </search>
+  <search id="overview_totals">
+    <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | stats dc(vm_key) AS vms count(eval((vmware_action="created" OR vmware_action="cloned") AND status="success")) AS created count(eval(vmware_action="deleted" AND status="success")) AS removed count(eval(status="failure")) AS failures</query>
+    <earliest>$time.earliest$</earliest>
+    <latest>$time.latest$</latest>
+  </search>
+  <row>
+    <panel>
+      <html>
+        <div class="vv-hero">
+          <div class="vv-tag">VMware activity and changes</div>
+          <h2>VMware Overview</h2>
+          <p>Who changed what, and when. Counts reflect unique recorded events in the selected window. State is last observed, not live inventory.</p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>VMs seen</title>
+        <option name="colorMode">block</option>
+        <option name="useColors">1</option>
+        <search base="overview_totals">
+          <query>fields vms</query>
+        </search>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Created / cloned</title>
+        <option name="colorMode">block</option>
+        <option name="useColors">1</option>
+        <search base="overview_totals">
+          <query>fields created</query>
+        </search>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Removed</title>
+        <option name="colorMode">block</option>
+        <option name="useColors">1</option>
+        <search base="overview_totals">
+          <query>fields removed</query>
+        </search>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Failed events</title>
+        <option name="colorMode">block</option>
+        <option name="useColors">1</option>
+        <search base="overview_totals">
+          <query>fields failures</query>
+        </search>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Lifecycle over time</title>
+        <option name="charting.chart">line</option>
+        <search base="overview_activity">
+          <query>search category IN (lifecycle,power,configuration,migration,snapshot) | timechart span=1h sum(events) by vmware_action limit=12</query>
+        </search>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Activity by category</title>
+        <option name="charting.chart">bar</option>
+        <search base="overview_activity">
+          <query>stats sum(events) AS count by category | sort - count</query>
+        </search>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Latest VM activity</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | where len(vm_key)&gt;0 | sort 0 - _time - event_id | dedup vm_key | head 200 | rename _time AS last_seen | table vcenter vm_key last_seen vm_name vmware_action user status message | convert ctime(last_seen)</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Users making changes</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | search category IN (configuration,lifecycle,power,migration,snapshot,security) | stats count dc(vm_key) AS VMs by user | sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Failures needing review</title>
+        <search>
+          <query>`vmware_vision_audit` | `vmware_vision_unique` | search vcenter=$vc|s$ | search status=failure | sort 200 - _time | table _time vcenter vm_name user event_type message</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">15</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

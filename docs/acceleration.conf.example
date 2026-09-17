@@ -1,0 +1,10 @@
+# Optional search-head local/datamodels.conf override.
+# Validate extraction and peer lookup execution before enabling and rebuilding.
+# Review storage and scheduler cost for your actual event volume.
+[VMware_Vision]
+acceleration = false
+
+[VMware_Vision_Activity]
+acceleration = true
+acceleration.earliest_time = -7d
+acceleration.cron_schedule = */5 * * * *

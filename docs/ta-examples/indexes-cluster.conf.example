@@ -1,0 +1,7 @@
+# Cluster manager's index-management app, distributed to peers only.
+# Set storage volumes, size and retention to your environment's policy.
+[vmware]
+homePath = $SPLUNK_DB/vmware/db
+coldPath = $SPLUNK_DB/vmware/colddb
+thawedPath = $SPLUNK_DB/vmware/thaweddb
+repFactor = auto

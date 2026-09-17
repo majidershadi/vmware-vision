@@ -1,0 +1,534 @@
+{
+  "modelName": "VMware_Vision",
+  "displayName": "VMware Vision",
+  "description": "Recorded VMware events. Automatic lookup normalizes fields at search time. Acceleration disabled by default; validate cost and coverage before enabling.",
+  "objectNameList": [
+    "Events",
+    "VM_Changes",
+    "Authentication",
+    "Alarms",
+    "Failures"
+  ],
+  "objects": [
+    {
+      "objectName": "Events",
+      "displayName": "VMware Events",
+      "parentName": "BaseEvent",
+      "constraints": [
+        {
+          "search": "`vmware_vision_events` record_kind=event"
+        }
+      ],
+      "fields": [
+        {
+          "fieldName": "event_id",
+          "displayName": "Event Id",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "event_type",
+          "displayName": "Event Type",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "event_time",
+          "displayName": "Event Time",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "event_chain_id",
+          "displayName": "Event Chain Id",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "user",
+          "displayName": "User",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vcenter",
+          "displayName": "Vcenter",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vm_name",
+          "displayName": "Vm Name",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vm_id",
+          "displayName": "Vm Id",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vm_uuid",
+          "displayName": "Vm Uuid",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vm_key",
+          "displayName": "Vm Key",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "identity_quality",
+          "displayName": "Identity Quality",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "datacenter",
+          "displayName": "Datacenter",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "cluster",
+          "displayName": "Cluster",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "esxi_host",
+          "displayName": "Esxi Host",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "datastore",
+          "displayName": "Datastore",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "action",
+          "displayName": "Action",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "category",
+          "displayName": "Category",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "status",
+          "displayName": "Status",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "observed_state",
+          "displayName": "Observed State",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "severity",
+          "displayName": "Severity",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "message",
+          "displayName": "Message",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "change_details",
+          "displayName": "Change Details",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "change_fields",
+          "displayName": "Change Fields",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "old_value",
+          "displayName": "Old Value",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "new_value",
+          "displayName": "New Value",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "src_ip",
+          "displayName": "Src Ip",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "task_id",
+          "displayName": "Task Id",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "parser_status",
+          "displayName": "Parser Status",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "parser_format",
+          "displayName": "Parser Format",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "parser_version",
+          "displayName": "Parser Version",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "event_uid",
+          "displayName": "Event Uid",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vendor_product",
+          "displayName": "Vendor Product",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "record_kind",
+          "displayName": "Record Kind",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "component",
+          "displayName": "Component",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vm_reference_count",
+          "displayName": "Vm Reference Count",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "vmware_action",
+          "displayName": "Vmware Action",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "cim_dataset",
+          "displayName": "Cim Dataset",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "app",
+          "displayName": "App",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "src",
+          "displayName": "Src",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "dest",
+          "displayName": "Dest",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "dvc",
+          "displayName": "Dvc",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "signature",
+          "displayName": "Signature",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "signature_id",
+          "displayName": "Signature Id",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "reason",
+          "displayName": "Reason",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "result",
+          "displayName": "Result",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "change_type",
+          "displayName": "Change Type",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "object",
+          "displayName": "Object",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "object_id",
+          "displayName": "Object Id",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "object_category",
+          "displayName": "Object Category",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "object_attrs",
+          "displayName": "Object Attrs",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        },
+        {
+          "fieldName": "command",
+          "displayName": "Command",
+          "type": "string",
+          "multivalue": false,
+          "required": false,
+          "hidden": false,
+          "comment": ""
+        }
+      ],
+      "calculations": []
+    },
+    {
+      "objectName": "VM_Changes",
+      "displayName": "VM Changes",
+      "parentName": "Events",
+      "constraints": [
+        {
+          "search": "category IN (\"lifecycle\",\"configuration\",\"power\",\"migration\",\"snapshot\",\"availability\")"
+        }
+      ],
+      "fields": [],
+      "calculations": []
+    },
+    {
+      "objectName": "Authentication",
+      "displayName": "Authentication",
+      "parentName": "Events",
+      "constraints": [
+        {
+          "search": "category=\"authentication\""
+        }
+      ],
+      "fields": [],
+      "calculations": []
+    },
+    {
+      "objectName": "Alarms",
+      "displayName": "Alarms",
+      "parentName": "Events",
+      "constraints": [
+        {
+          "search": "category=\"alarm\""
+        }
+      ],
+      "fields": [],
+      "calculations": []
+    },
+    {
+      "objectName": "Failures",
+      "displayName": "Failures",
+      "parentName": "Events",
+      "constraints": [
+        {
+          "search": "status=\"failure\""
+        }
+      ],
+      "fields": [],
+      "calculations": []
+    }
+  ]
+}

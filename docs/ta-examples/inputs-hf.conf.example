@@ -1,0 +1,41 @@
+# HF only. Inactive until copied into local/inputs.conf and explicitly enabled.
+# These are plain TCP syslog receivers, not TLS or Splunk-to-Splunk receivers.
+# Choose these OR collector file monitors, avoiding duplicate collection.
+[tcp://1514]
+index = vmware
+sourcetype = vmware:vision:vcenter
+connection_host = ip
+disabled = 1
+
+[tcp://1515]
+index = vmware
+sourcetype = vmware:vision:aria
+connection_host = ip
+disabled = 1
+
+[tcp://1516]
+index = vmware
+sourcetype = vmware:vision:esxi
+connection_host = ip
+disabled = 1
+
+# Alternative: a collector writes one file stream per source family.
+[monitor:///var/log/remote/vcenter/*.log]
+index = vmware
+sourcetype = vmware:vision:vcenter
+disabled = 1
+
+[monitor:///var/log/remote/aria/*.log]
+index = vmware
+sourcetype = vmware:vision:aria
+disabled = 1
+
+[monitor:///var/log/remote/esxi/*.log]
+index = vmware
+sourcetype = vmware:vision:esxi
+disabled = 1
+
+[monitor:///var/log/remote/vmware-json/*.jsonl]
+index = vmware
+sourcetype = vmware:vision:json
+disabled = 1
