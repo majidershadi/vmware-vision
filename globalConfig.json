@@ -9,7 +9,7 @@
             "3.9",
             "3.13"
         ],
-        "checkForUpdates": false
+        "checkForUpdates": true
     },
     "pages": {
         "configuration": {

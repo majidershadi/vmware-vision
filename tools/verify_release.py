@@ -13,6 +13,9 @@ import xml.etree.ElementTree as ET
 def verify(root, version):
     conf = configparser.ConfigParser(interpolation=None)
     conf.read(root / "default/app.conf")
+    assert conf.getboolean(
+        "package", "check_for_updates", fallback=True
+    ), "Splunkbase rejects disabled update checks"
     assert conf["launcher"]["version"] == conf["id"]["version"] == version
     assert (root / "VERSION").read_text().splitlines() == [version, version]
     manifest = json.loads((root / "app.manifest").read_text())
@@ -23,6 +26,7 @@ def verify(root, version):
     )
     assert config["meta"]["version"] == version
     assert config["meta"]["_uccVersion"] == "6.6.0"
+    assert config["meta"].get("checkForUpdates", True) is True
     for name in ["transforms.conf", "restmap.conf"]:
         conf = configparser.ConfigParser(interpolation=None)
         conf.read(root / "default" / name)

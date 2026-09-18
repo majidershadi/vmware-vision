@@ -66,7 +66,7 @@ version = 1.0.1
 
 [package]
 id = TA-vmware-vision
-check_for_updates = false
+check_for_updates = true
 """,
         "metadata/default.meta": """[]
 access = read : [ * ], write : [ admin, sc_admin ]

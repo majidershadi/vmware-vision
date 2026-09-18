@@ -16,6 +16,14 @@ assert (
     VERSION == config["meta"]["version"] == manifest["info"]["id"]["version"] == version
 )
 assert set(config["meta"]["supportedPythonVersion"]) == {"3.9", "3.13"}
+assert (
+    config["meta"].get("checkForUpdates", True) is True
+), "Splunkbase update checks must remain enabled"
+app = configparser.ConfigParser(interpolation=None)
+app.read(root / "package/default/app.conf")
+assert app.getboolean(
+    "package", "check_for_updates", fallback=True
+), "Splunkbase update checks must remain enabled"
 props = configparser.ConfigParser(interpolation=None)
 props.read(root / "package/default/props.conf")
 for stanza in props.sections():
