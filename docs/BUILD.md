@@ -59,7 +59,7 @@ Expected files:
 
 ```text
 dist/vmware_vision-1.1.0.tar.gz
-dist/TA-vmware-vision-1.0.1.tar.gz
+dist/TA-vmware-vision-1.0.2.tar.gz
 dist/SHA256SUMS.txt
 ```
 
@@ -71,6 +71,16 @@ Check downloaded or copied archives with:
 cd dist
 sha256sum -c SHA256SUMS.txt
 ```
+
+For a TA-only change, the shared source still supplies parsing settings, but no UCC rebuild is needed:
+
+```bash
+make test
+.venv/bin/python tools/build_ta.py
+.venv/bin/python tools/inspect_release.py .venv/bin/splunk-appinspect dist/TA-vmware-vision-1.0.2.tar.gz
+```
+
+TA releases use their own tags, such as `ta-v1.0.2`. A new TA icon or guide does not require an app version bump. Existing published app archives remain unchanged.
 
 ## 5. Run AppInspect
 
@@ -98,6 +108,7 @@ UCC may embed a build timestamp, so independent full app builds are not promised
 | `package/default/` | Search settings, models, dashboards, macros and reports |
 | `package/metadata/default.meta` | Cross-app knowledge-object visibility |
 | `package/static/` | Launcher icons and app branding |
+| `assets/ta/` | TA launcher icons |
 | `package/appserver/static/` | Web assets and dashboard styling |
 | `globalConfig.json` | UCC configuration page |
 | `additional_packaging.py` | Small changes to UCC output |

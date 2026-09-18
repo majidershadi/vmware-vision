@@ -9,8 +9,8 @@ Copy the text below into two separate listings. The Summary, Details, Installati
 | Display name | VMware Vision for Splunk | VMware Vision Ingestion Add-on |
 | Package / app ID | `vmware_vision` | `TA-vmware-vision` |
 | Type | App | Add-on |
-| Version | 1.1.0 | 1.0.1 |
-| Upload file | `vmware_vision-1.1.0.tar.gz` | `TA-vmware-vision-1.0.1.tar.gz` |
+| Version | 1.1.0 | 1.0.2 |
+| Upload file | `vmware_vision-1.1.0.tar.gz` | `TA-vmware-vision-1.0.2.tar.gz` |
 | Author / publisher | Your existing Splunkbase publisher account; project author: Majid Ershadi | Same account |
 | Primary category | IT Operations | IT Operations |
 | Additional category, if offered | Security, Fraud & Compliance | Leave unset unless a more suitable ingestion category is available |
@@ -181,7 +181,7 @@ VMware Vision is an independent project and is not an official VMware, Broadcom 
 ## 11. Technical add-on: Installation
 
 1. Identify the first full parsing tier for each VMware raw-data path. Do not assume that every forwarder performs full parsing.
-2. Download `TA-vmware-vision-1.0.1.tar.gz` and verify its checksum.
+2. Download `TA-vmware-vision-1.0.2.tar.gz` and verify its checksum.
 3. Install on the HF when it first parses the VMware syslog. If raw parsing occurs on indexers, deploy it there instead. Use the indexer cluster manager for clustered peers.
 4. Keep inputs, index definitions and forwarding destinations in your managed collection configuration. Adapt only the examples needed on each tier; they are not enabled by the package.
 5. Assign the appropriate `vmware:vision:*` sourcetype at collection. Do not relabel an existing source without reviewing other apps that depend on it.
@@ -218,7 +218,7 @@ If the source uses another supported sourcetype, substitute its exact name. Revi
 
 ## 13. Technical add-on: release notes
 
-Version 1.0.1 adds Apache 2.0 licensing, project branding and updated deployment guidance for VMware Vision 1.1.0. Event boundaries, timestamp handling and character-encoding settings are unchanged from version 1.0.0. No Python runtime, search-time lookup or enabled collection input has been added.
+Version 1.0.2 gives the TA its own beacon-and-VM icon and adds a dedicated configuration guide. Apache 2.0 licensing and enabled update checks are retained. Event boundaries, timestamp handling and character encoding are unchanged. No Python runtime, search-time lookup or enabled collection input has been added. It remains compatible with VMware Vision 1.1.0.
 
 ## 14. Contact and support text for both listings
 
@@ -235,9 +235,10 @@ Support is provided by the project maintainer through the public issue tracker. 
 | Field | Value |
 |---|---|
 | Source code | https://github.com/majidershadi/vmware-vision |
-| Download / release notes | https://github.com/majidershadi/vmware-vision/releases/tag/v1.1.0 |
+| App download / release notes | https://github.com/majidershadi/vmware-vision/releases/tag/v1.1.0 |
+| TA download / release notes | https://github.com/majidershadi/vmware-vision/releases/tag/ta-v1.0.2 |
 | Documentation | https://github.com/majidershadi/vmware-vision/blob/main/docs/INSTALLATION.md |
-| TA documentation | https://github.com/majidershadi/vmware-vision/blob/main/docs/DEPLOYMENT.md |
+| TA documentation | https://github.com/majidershadi/vmware-vision/blob/main/docs/TA_CONFIGURATION.md |
 | Data-model setup | https://github.com/majidershadi/vmware-vision/blob/main/docs/DATA_MODELS.md |
 | CIM setup | https://github.com/majidershadi/vmware-vision/blob/main/docs/CIM.md |
 | Troubleshooting | https://github.com/majidershadi/vmware-vision/blob/main/docs/TROUBLESHOOTING.md |
@@ -248,7 +249,7 @@ Support is provided by the project maintainer through the public issue tracker. 
 
 ## 16. Icons, screenshots and reviewer notes
 
-Use the selected eye-and-VM image for both listings. The source repository provides a 512 × 512 PNG in `docs/assets/vmware-vision.png`, with package launcher icons in `package/static/`. Follow the dimensions requested by the upload form. Screenshots, if supplied, must show the actual running app and should use suitable sample data. The ingestion TA has no dashboard to screenshot.
+Use the eye-and-VM image for the app and the beacon-and-VM image for the TA. The 512 × 512 listing images are `docs/assets/vmware-vision.png` and `docs/assets/ta-vmware-vision.png`. App launcher icons are in `package/static/`; TA launcher icons are in `assets/ta/`. Follow the dimensions requested by the upload form. Screenshots, if supplied, must show the actual running app and should use suitable sample data. The ingestion TA has no dashboard to screenshot.
 
 Reviewer notes for the app:
 

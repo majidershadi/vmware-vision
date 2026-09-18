@@ -13,6 +13,12 @@
 
 The search app still normalizes syslog at search time. It does not poll VMware APIs, provide complete inventory, or establish that every requested operation completed.
 
+## TA-vmware-vision 1.0.2
+
+- Give the ingestion TA a distinct beacon-and-VM icon while retaining the app's eye-and-VM branding.
+- Include a dedicated TA configuration guide with collector file inputs, forwarding checks and deployment acceptance steps.
+- Keep raw parsing settings unchanged and update checks enabled. No reindexing or data-model rebuild is required for this TA update.
+
 ## TA-vmware-vision 1.0.1
 
 - Enable Splunkbase update checks for upload validation.

@@ -13,7 +13,7 @@ import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_ID = "TA-vmware-vision"
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 SOURCETYPES = (
     "vmware:vision:vcenter",
     "vmware:vision:aria",
@@ -48,7 +48,7 @@ def payload(root=ROOT):
         + "\n",
         "default/app.conf": """[install]
 is_configured = 0
-build = 101
+build = 102
 state = enabled
 
 [ui]
@@ -58,11 +58,11 @@ label = VMware Vision Ingestion Add-on
 [launcher]
 author = Majid Ershadi
 description = VMware syslog event boundaries, timestamps and character encoding for parsing tiers
-version = 1.0.1
+version = 1.0.2
 
 [id]
 name = TA-vmware-vision
-version = 1.0.1
+version = 1.0.2
 
 [package]
 id = TA-vmware-vision
@@ -75,7 +75,7 @@ export = none
 [props]
 export = system
 """,
-        "README.txt": """TA-vmware-vision 1.0.1
+        "README.txt": """TA-vmware-vision 1.0.2
 VMware Vision ingestion add-on for Splunk heavy forwarders and indexers.
 
 Install on the first full parsing tier for each VMware input path. If an HF
@@ -90,7 +90,7 @@ No inputs, outputs, indexes, credentials, dashboards or scripts are enabled
 or included as active configuration. README/examples contains inactive samples.
 Select only the examples needed on each tier and edit them before use.
 
-Read README/DEPLOYMENT.md for deployment and acceptance steps.
+Read README/TA_CONFIGURATION.md for setup and README/DEPLOYMENT.md for placement.
 Verify collection and distributed search in your deployment.
 Compatible with VMware Vision for Splunk 1.1.0.
 """,
@@ -101,6 +101,9 @@ Compatible with VMware Vision for Splunk 1.1.0.
     files["README/DEPLOYMENT.md"] = (root / "docs/DEPLOYMENT.md").read_text(
         encoding="utf-8"
     )
+    files["README/TA_CONFIGURATION.md"] = (
+        root / "docs/TA_CONFIGURATION.md"
+    ).read_text(encoding="utf-8")
     for name in (
         "inputs-hf.conf.example",
         "indexes-indexer.conf.example",
@@ -113,7 +116,7 @@ Compatible with VMware Vision for Splunk 1.1.0.
         name: text.replace("\r\n", "\n").encode("utf-8") for name, text in files.items()
     }
     for name in ("appIcon.png", "appIcon_2x.png"):
-        content["static/" + name] = (root / "package/static" / name).read_bytes()
+        content["static/" + name] = (root / "assets/ta" / name).read_bytes()
     return content
 
 

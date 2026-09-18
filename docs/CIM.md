@@ -10,7 +10,7 @@ The lab has Splunk Enterprise 10.4.1 and Splunk_SA_CIM 8.7.0. Python 3.9 and 3.1
 |---|---|
 | Standalone Splunk | VMware Vision 1.1.0 and Splunk_SA_CIM |
 | Search head / search head cluster | VMware Vision 1.1.0 and the CIM version supported by that Splunk/ES installation |
-| Heavy forwarder | TA-vmware-vision 1.0.1 for raw parsing |
+| Heavy forwarder | TA-vmware-vision 1.0.2 for raw parsing |
 | Indexers | Index configuration; TA where raw parsing occurs; search-time knowledge comes from the search head bundle |
 
 For Enterprise Security, use its supported bundled CIM version; do not replace it independently just to match this lab. Deploy search head cluster apps through the deployer. Deploy indexer parsing configuration through the cluster manager. Do not copy the whole dashboard app or install CIM on an HF solely for this integration.

@@ -2,7 +2,7 @@ PYTHON ?= .venv/bin/python
 UCC := .venv/bin/ucc-gen
 APPINSPECT := .venv/bin/splunk-appinspect
 VERSION := 1.1.0
-TA_VERSION := 1.0.1
+TA_VERSION := 1.0.2
 
 .PHONY: help test build verify package appinspect release
 

@@ -14,6 +14,8 @@
 
 The TA has event boundaries, timestamp extraction, truncation and UTF-8 settings. It has no Python, CIM mappings or dashboards. The full app's search-time knowledge is distributed from search heads to search peers through Splunk's search bundle. Installing the TA on indexers does not replace that bundle.
 
+For a complete input and verification example, read `TA_CONFIGURATION.md` alongside this guide. It is included in the installed TA under `README/`.
+
 ## Deploy to an HF
 
 1. Extract the TA using your deployment process into `$SPLUNK_HOME/etc/apps/TA-vmware-vision`.

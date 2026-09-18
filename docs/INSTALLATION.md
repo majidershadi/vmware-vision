@@ -31,7 +31,7 @@ Apply your own retention, storage limits and role permissions. For an indexer cl
 
 On a standalone instance, install the full app through **Apps → Manage Apps → Install app from file**. Upload `vmware_vision-1.1.0.tar.gz` and restart when Splunk requests it.
 
-For distributed deployments, install the full app on search heads. Install `TA-vmware-vision-1.0.1.tar.gz` on the first full parsing tier for each raw input path. If an HF parses all events, indexers do not need another copy solely to parse those already cooked events. See the tier table in [DEPLOYMENT.md](DEPLOYMENT.md).
+For distributed deployments, install the full app on search heads. Install `TA-vmware-vision-1.0.2.tar.gz` on the first full parsing tier for each raw input path. If an HF parses all events, indexers do not need another copy solely to parse those already cooked events. See the tier table in [DEPLOYMENT.md](DEPLOYMENT.md) and the step-by-step [TA configuration guide](TA_CONFIGURATION.md).
 
 Do not extract either archive into a second nested directory. The installed full app should be `$SPLUNK_HOME/etc/apps/vmware_vision/default/app.conf`.
 

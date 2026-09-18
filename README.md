@@ -11,11 +11,17 @@ The app works with logs already collected from vCenter, ESXi and Aria. It does n
 | Package | Version | Install on |
 |---|---|---|
 | `vmware_vision` | 1.1.0 | Search heads or a standalone Splunk instance |
-| `TA-vmware-vision` | 1.0.1 | The heavy forwarder or indexers that first parse raw VMware logs |
+| `TA-vmware-vision` | 1.0.2 | The heavy forwarder or indexers that first parse raw VMware logs |
 
 The technical add-on supplies event boundaries, timestamp settings and character encoding. Search-time field extraction, dashboards, reports and CIM mappings belong to the full app. Neither package enables a listener, creates an index or configures forwarding.
 
 Download installation archives from [Releases](https://github.com/majidershadi/vmware-vision/releases). The source ZIP is a development tree and cannot be installed directly as a Splunk app.
+
+Both packages share this repository so their raw parsing settings stay synchronized. They have separate versions, install archives and icons: the eye and VM for the app, and the beacon and VM for the TA.
+
+<img src="docs/assets/ta-vmware-vision.png" width="96" height="96" alt="TA-vmware-vision beacon and virtual machine icon">
+
+For TA setup, follow [TA configuration](docs/TA_CONFIGURATION.md). The latest TA release changes its icon and setup documentation; parsing behavior remains unchanged.
 
 ## Start here
 
