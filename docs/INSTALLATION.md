@@ -29,7 +29,7 @@ Apply your own retention, storage limits and role permissions. For an indexer cl
 
 ## 3. Install the two packages where needed
 
-On a standalone instance, install the full app through **Apps → Manage Apps → Install app from file**. Upload `vmware_vision-1.1.0.tar.gz` and restart when Splunk requests it.
+On a standalone instance, install the full app through **Apps → Manage Apps → Install app from file**. Upload `vmware_vision-1.1.1.tar.gz` and restart when Splunk requests it.
 
 For distributed deployments, install the full app on search heads. Install `TA-vmware-vision-1.0.2.tar.gz` on the first full parsing tier for each raw input path. If an HF parses all events, indexers do not need another copy solely to parse those already cooked events. See the tier table in [DEPLOYMENT.md](DEPLOYMENT.md) and the step-by-step [TA configuration guide](TA_CONFIGURATION.md).
 
@@ -100,7 +100,7 @@ Then inspect specific records:
 | table _time host sourcetype event_type vm_name vm_id user vmware_action action status parser_status
 ```
 
-Expect parser version `1.1.0`. `record_kind=diagnostic` is normal for service logs; it is not a failed VM extraction. An unknown event class stays visible rather than being guessed into a successful operation.
+Expect parser version `1.1.1`. `record_kind=diagnostic` is normal for service logs; it is not a failed VM extraction. An unknown event class stays visible rather than being guessed into a successful operation.
 
 Repeat a search from **Search & Reporting** to verify cross-app lookup visibility:
 
@@ -122,6 +122,8 @@ Follow [DATA_MODELS.md](DATA_MODELS.md) for the two custom VMware models and opt
 ## 9. Upgrade safely
 
 Back up the installed app's `local/` directory and `metadata/local.meta`. Upgrade through the same deployment mechanism you used to install it. Review local overrides before restarting.
+
+For 1.1.1, upgrade the full app on the search tier. TA 1.0.2 is unchanged. Start a new search and confirm `parser_version=1.1.1` on each search peer. Rebuild affected accelerated VMware or CIM summaries if you need historical events to reflect corrected parsing; schedule the rebuild for a suitable maintenance window. No reindexing is required. See [Troubleshooting](TROUBLESHOOTING.md#missing-lookup-fields-when-the-raw-record-ends-with-whitespace) for the whitespace fix and the remaining embedded-CRLF limitation.
 
 For upgrades from 1.0.x, replace native `action` references with `vmware_action` in custom searches and alerts. A local props lookup output list can hide newly added fields; compare it with the full new default. Rebuild enabled VMware summaries because the compact model's action dimension changed. Existing raw events do not need reindexing.
 

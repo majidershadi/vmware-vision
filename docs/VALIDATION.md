@@ -6,7 +6,7 @@ The parser and CSV lookup use the standard library and support Python 3.9 and 3.
 
 ## Completed functional checks
 
-- 55 source tests cover parsing, field contracts, CIM mapping and exclusion rules, dashboard queries, runtime configuration, script sharing and TA packaging.
+- 60 source tests cover parsing, field contracts, CIM mapping and exclusion rules, dashboard queries, runtime configuration, script sharing and TA packaging.
 - A standalone Splunk search in Search & Reporting verified global automatic lookup visibility and tag matching.
 - A fixed set of 16 synthetic indexed records produced one Authentication record, eleven Change records and four excluded records. Exclusions included an alarm, a generic failed task, an unknown event and a requested power-on.
 - Both custom models returned all sixteen event records with fourteen native action values when scoped to that test set.
@@ -31,3 +31,10 @@ Other advisory messages concern framework TLS and threading code, dependency met
 Verify the actual raw-data path, timestamps, multiline boundaries, source attribution and sourcetype assignment. Test cross-app search and knowledge bundle replication on every search peer. Compare real VM outcomes with vCenter records, check required CIM fields for the detections you intend to enable, and measure lookup and acceleration cost at your event volume.
 
 For summaries, compare a completed covered interval with raw-backed results. The model counts received records; some audit dashboards deduplicate event identity. Do not use a difference between those totals alone as evidence of a parsing failure.
+
+
+## 1.1.1 regression scope
+
+The additional tests cover exact CSV key preservation and quoting, explicit Hostd logout recognition, negative authentication cases, Envoy access logs and narrowly matched UI/SPS diagnostics. The audit candidate filter includes numeric Hostd event records. Coverage retains records with absent lookup fields instead of silently dropping them from grouped totals.
+
+Live validation uses synthetic search results, without indexing new records. The baseline on 1.1.0 reproduced missing lookup fields for leading/trailing whitespace. The corrected writer resolves those cases. Thirteen supported cases passed in both VMware Vision and Search & Reporting, with original raw text preserved. Empty normalized outputs retain their missing-field behavior. Embedded CRLF remains a documented failing case in the Splunk lookup path; the offline CSV round-trip test preserves its bytes. See `TROUBLESHOOTING.md`. The native report and release verification record describe the exact final archive and results.

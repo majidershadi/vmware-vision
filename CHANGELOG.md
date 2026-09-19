@@ -1,5 +1,13 @@
 # Changes
 
+## VMware Vision 1.1.1
+
+- Quote external lookup CSV output so leading and trailing whitespace no longer prevents matching results to events. Preserve input line endings and original raw text.
+- Recognize explicit ESXi Hostd logout events without treating logout as a CIM login.
+- Classify supported Envoy access, UI subscription retry and SPS debug messages as diagnostics. Keep unknown messages visible.
+- Include numeric Hostd events in audit searches and show missing lookup output separately from unclassified traffic in coverage charts.
+- Keep the ingestion TA at 1.0.2; no ingestion settings change. See the upgrade and validation guides for the remaining embedded-CRLF lookup limitation.
+
 ## VMware Vision 1.1.0
 
 - Enable Splunkbase update checks in both package metadata and the UCC build settings; reject disabled checks during release verification.

@@ -58,7 +58,7 @@ make package
 Expected files:
 
 ```text
-dist/vmware_vision-1.1.0.tar.gz
+dist/vmware_vision-1.1.1.tar.gz
 dist/TA-vmware-vision-1.0.2.tar.gz
 dist/SHA256SUMS.txt
 ```

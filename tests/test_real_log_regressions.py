@@ -18,6 +18,66 @@ def diagnostic(body, app="vpxd-main"):
 
 
 class RealLogRegressions(unittest.TestCase):
+    def test_hostd_logout_is_an_event_but_not_a_cim_login(self):
+        body = (
+            "[Originator@6876 sub=Vimsvc.ha-eventmgr opID=example user=root] "
+            "Event 42 : User root@127.0.0.1 logged out (login time: Thursday, "
+            "17 September, 2026 07:15:45 AM, number of API invocations: 7)"
+        )
+        for prefix in (
+            "Sep 17 10:45:45 192.0.2.117 2026-09-17T07:15:46.210Z esxi.example.test ",
+            "2026-09-17T07:15:46.210Z In(166) ",
+        ):
+            result = parse(prefix + "Hostd[123]: " + body, "esxi.example.test")
+            self.assertEqual(result["event_type"], "UserLogoutSessionEvent")
+            self.assertEqual(result["vmware_action"], "logout")
+            self.assertEqual(result["record_kind"], "event")
+            self.assertEqual(result["parser_format"], "esxi_hostd_event")
+            self.assertEqual(result["event_id"], "42")
+            self.assertEqual(result["user"], "root")
+            self.assertEqual(result["src_ip"], "127.0.0.1")
+            self.assertEqual(result["esxi_host"], "esxi.example.test")
+            self.assertEqual(result["event_time"], "2026-09-17T07:15:46.210Z")
+            self.assertEqual(result["cim_dataset"], "")
+            self.assertEqual(result["vm_key"], "")
+
+    def test_logout_words_without_hostd_event_are_not_authentication(self):
+        for raw in (
+            "User root@127.0.0.1 logged out (login time: yesterday)",
+            "2026-09-17T07:15:46Z esxi.example.test Hostd[1]: Event 42 : User root@127.0.0.1 logged out (login time: yesterday)",
+            '2026-09-17T07:15:46Z esxi.example.test envoy-access[1]: POST /sdk 200 via_upstream - "Logout"',
+        ):
+            result = parse(raw)
+            self.assertEqual(result["event_type"], "")
+            self.assertEqual(result["cim_dataset"], "")
+
+    def test_envoy_access_is_diagnostic_even_when_method_is_logout(self):
+        for method in ("CurrentTime", "Logout", "PowerOnVM_Task"):
+            raw = (
+                "Sep 17 10:45:45 192.0.2.118 2026-09-17T07:15:46.349Z "
+                'esxi.example.test envoy-access[123]: POST /sdk 200 via_upstream - "' + method + '"'
+            )
+            result = parse(raw)
+            self.assertEqual(result["component"], "envoy-access")
+            self.assertEqual(result["record_kind"], "diagnostic")
+            self.assertEqual(result["observed_state"], "")
+            self.assertEqual(result["cim_dataset"], "")
+
+    def test_only_known_ui_and_sps_diagnostic_shapes_are_classified(self):
+        for component, body in (
+            ("ui-main", "[INFO ] pool-123 Scheduling re-subscription with delay of 5000 milliseconds."),
+            ("sps", "        DER Octet String[21] "),
+            ("sps", "    Tagged [2] IMPLICIT "),
+            ("sps", "        Extensions: "),
+        ):
+            envelope = "Sep 17 10:45:36 192.0.2.50 1 2026-09-17T07:15:37Z vc.example.test " + component + " - - - "
+            result = parse(envelope + body)
+            self.assertEqual(result["record_kind"], "diagnostic")
+            self.assertEqual(result["cim_dataset"], "")
+            self.assertEqual(parse(envelope + "unknown message")["record_kind"], "unclassified")
+            explicit = parse(envelope + body + " eventType=VmCreatedEvent vm_id=vm-1")
+            self.assertEqual(explicit["record_kind"], "event")
+
     def test_service_principal_is_not_event_type(self):
         result = parse(
             diagnostic(

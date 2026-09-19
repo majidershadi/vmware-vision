@@ -4,7 +4,7 @@ import json
 import re
 from vmware_vision_cim import CIM_FIELDS, normalize
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 EVENTS = {}
 
 
@@ -106,6 +106,18 @@ RELAY_RE = re.compile(
     re.S,
 )
 APP_RE = re.compile(r"^(?:<\d+>)?1\s+\S+\s+\S+\s+(?P<component>\S+)\s+")
+ESXI_RE = re.compile(
+    r"^(?:(?:<\d+>)?[A-Z][a-z]{2}\s+\d{1,2}\s+\d\d:\d\d:\d\d\s+\S+\s+)?"
+    r"(?P<time>\d{4}-\d\d-\d\dT\S+)\s+(?:(?:In|Wa|Er|Db)\(\d+\)\s+)?"
+    r"(?:(?P<origin>[\w.-]+)\s+)?(?P<component>Hostd|Vpxa|envoy-access)\[\d+\]:\s+(?P<body>.*)$",
+    re.I | re.S,
+)
+HOSTD_LOGOUT_RE = re.compile(
+    r"\[Originator@\d+\s+sub=Vimsvc\.ha-eventmgr\b[^\]]*\]\s+"
+    r"Event\s+(?P<event_id>\d+)\s*:\s+User\s+(?P<user>\S+)@(?P<src>[^\s@]+)"
+    r"\s+logged out\s+\(login time:.*\)\s*$",
+    re.S,
+)
 TYPE_RE = re.compile(r"\bvim\.event\.(\w+)\b")
 VM_REF_RE = re.compile(r"\[vim\.VirtualMachine:(vm-\d+),([^\]]+)\]")
 KV_RE = re.compile(
@@ -235,8 +247,12 @@ def parse(raw, host="", sourcetype=""):
         envelope = relay["inner"]
     origin = SYSLOG_RE.match(envelope) or SYSLOG_RE.match(raw)
     app = APP_RE.match(envelope)
+    esxi = ESXI_RE.match(envelope)
     if app:
         out["component"] = app["component"]
+    elif esxi:
+        out["component"] = esxi["component"].lower()
+        out["esxi_host"] = out["esxi_host"] or esxi["origin"] or host
     match = EVENT_RE.search(message)
     if match:
         out.update(match.groupdict())
@@ -245,13 +261,28 @@ def parse(raw, host="", sourcetype=""):
     else:
         out["message"] = message
     out["vcenter"] = (
-        out["vcenter"] or (origin["origin"] if origin else host) or "unknown"
+        out["vcenter"]
+        or (origin["origin"] if origin else (esxi["origin"] if esxi else ""))
+        or host
+        or "unknown"
     )
     out["event_type"] = out["event_type"].split(".")[-1]
     if not out["event_type"]:
         typ = TYPE_RE.search(message)
         if typ:
             out["event_type"] = typ[1]
+    if not out["event_type"] and esxi and out["component"] == "hostd":
+        logout = HOSTD_LOGOUT_RE.fullmatch(esxi["body"])
+        if logout:
+            out.update(
+                event_type="UserLogoutSessionEvent",
+                event_id=logout["event_id"],
+                event_time=out["event_time"] or esxi["time"],
+                user=logout["user"],
+                src_ip=logout["src"],
+                parser_format="esxi_hostd_event",
+                message=esxi["body"],
+            )
     references = dict(VM_REF_RE.findall(message))
     out["vm_reference_count"] = str(len(references))
     if len(references) == 1:
@@ -326,9 +357,18 @@ def parse(raw, host="", sourcetype=""):
     elif out["event_type"]:
         out["action"] = "other_event"
         out["parser_status"] = "unmapped_event_type"
-    elif re.search(r"\[Originator@\d+\b", message) or out["component"] in (
-        "vpxd-main",
-        "vum-vmacore",
+    elif (
+        re.search(r"\[Originator@\d+\b", message)
+        or out["component"] in ("vpxd-main", "vum-vmacore")
+        or (esxi and out["component"] == "envoy-access" and re.match(
+            r"(?:GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s+/\S*\s+\d{3}\s+", esxi["body"]
+        ))
+        or (out["component"] == "ui-main" and re.search(
+            r"\bScheduling re-subscription with delay of \d+ milliseconds\.", message
+        ))
+        or (out["component"] == "sps" and re.search(
+            r"\s-\s+-\s+-\s+(?:DER Octet String\[\d+\]|Tagged \[\d+\] IMPLICIT|Extensions:)\s*$", message
+        ))
     ):
         out.update(
             record_kind="diagnostic",

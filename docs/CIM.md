@@ -1,6 +1,6 @@
-# VMware Vision 1.1.0: CIM setup and upgrade
+# VMware Vision 1.1.1: CIM setup and upgrade
 
-This release adds scoped mappings into **Authentication.Authentication** and **Change.All_Changes**. It preserves VMware operations in `vmware_action`, while `action` uses CIM values for eligible events. The bundled dashboards and reports use `vmware_action`.
+VMware Vision provides scoped mappings into **Authentication.Authentication** and **Change.All_Changes**. It preserves VMware operations in `vmware_action`, while `action` uses CIM values for eligible events. The bundled dashboards and reports use `vmware_action`.
 
 The lab has Splunk Enterprise 10.4.1 and Splunk_SA_CIM 8.7.0. Python 3.9 and 3.13 are declared runtimes; Splunk 10.0.2 remains a compatibility target, not a completed distributed acceptance test. These mappings do not establish Splunk certification or validate every Enterprise Security detection. See [VALIDATION.md](VALIDATION.md) for the scope of completed checks.
 
@@ -8,8 +8,8 @@ The lab has Splunk Enterprise 10.4.1 and Splunk_SA_CIM 8.7.0. Python 3.9 and 3.1
 
 | Tier | Required content |
 |---|---|
-| Standalone Splunk | VMware Vision 1.1.0 and Splunk_SA_CIM |
-| Search head / search head cluster | VMware Vision 1.1.0 and the CIM version supported by that Splunk/ES installation |
+| Standalone Splunk | VMware Vision 1.1.1 and Splunk_SA_CIM |
+| Search head / search head cluster | VMware Vision 1.1.1 and the CIM version supported by that Splunk/ES installation |
 | Heavy forwarder | TA-vmware-vision 1.0.2 for raw parsing |
 | Indexers | Index configuration; TA where raw parsing occurs; search-time knowledge comes from the search head bundle |
 
@@ -19,7 +19,7 @@ For Enterprise Security, use its supported bundled CIM version; do not replace i
 
 1. Back up the installed `vmware_vision` app, including `local/` and `metadata/local.meta`.
 2. Record the current VMware index macro, custom searches and data-model acceleration settings.
-3. Upload `vmware_vision-1.1.0.tar.gz` using **Apps → Manage Apps → Install app from file**, selecting the upgrade option. Follow your normal deployment process for clustered environments.
+3. Upload `vmware_vision-1.1.1.tar.gz` using **Apps → Manage Apps → Install app from file**, selecting the upgrade option. Follow your normal deployment process for clustered environments.
 4. Review local overrides. A local `LOOKUP-vmware_vision` output list can hide the new fields. Compare it with the new default; preserve intentional changes, but include the full new output list. Also inspect local transforms, metadata, dashboards and model definitions that override defaults.
 5. Restart Splunk when requested, or use your approved knowledge-object reload procedure. Start a new search job for validation.
 
@@ -47,7 +47,7 @@ index=vmware sourcetype=vmware:vision:*
 | stats count by parser_version cim_dataset event_type vmware_action action status
 ```
 
-Expect `parser_version=1.1.0`. Events without `cim_dataset` are omitted by this particular `stats by` search. Inspect exclusions separately:
+Expect `parser_version=1.1.1`. Events without `cim_dataset` are omitted by this particular `stats by` search. Inspect exclusions separately:
 
 ```spl
 index=vmware sourcetype=vmware:vision:*

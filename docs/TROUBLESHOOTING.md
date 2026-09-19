@@ -38,7 +38,7 @@ Use this non-indexing diagnostic from Search & Reporting:
 | table parser_version cim_dataset vmware_action action status
 ```
 
-Expected values are `1.1.0`, `Change`, `power_on`, `started`, `success`. This checks local execution only. A real indexed search is still needed to test peer execution and automatic lookup application.
+Expected values are `1.1.1`, `Change`, `power_on`, `started`, `success`. This checks local execution only. A real indexed search is still needed to test peer execution and automatic lookup application.
 
 ## Fields exist in a table but a filter returns nothing
 
@@ -47,3 +47,36 @@ Compare the generated fields with the original event. Computed values need not a
 ## Useful evidence
 
 Review Job Inspector's search messages and the relevant `search.log` entries. For distributed failures, identify the affected search peer and its bundle version. Share only sanitized log excerpts. Never include authentication headers, session tokens, passwords or private keys in a GitHub issue.
+
+
+## Missing lookup fields when the raw record ends with whitespace
+
+Versions through 1.1.0 used minimally quoted CSV output. In the lab, Splunk failed to match some returned lookup keys when `_raw` had leading or trailing whitespace. Explicitly trimming a temporary input field made these records match, while the original lookup returned no parser fields. Version 1.1.1 quotes the three input keys in CSV and preserves input line endings. It does not trim or rewrite indexed events.
+
+Upgrade the full app on the search tier using your normal deployment process. For a search head cluster, use the deployer. Preserve local settings and review overrides of `LOOKUP-vmware_vision`, transforms, fields and script-sharing metadata. Start a new job after the app and search bundle have refreshed. Confirm `parser_version=1.1.1` in VMware Vision and Search & Reporting, including results from every peer that holds matching records. The ingestion TA remains 1.0.2.
+
+No reindexing is needed. Rebuild affected VMware and CIM acceleration summaries if you need historical summary results to include corrected normalization; plan for the rebuild cost. Unaccelerated searches apply the new lookup to existing data immediately after configuration and bundle refresh.
+
+The coverage chart now labels absent classification fields as `lookup_missing`. `unclassified` means the parser returned a result but did not recognize the message. `diagnostic` means a supported service-log shape was recognized; it is not evidence of a completed VM change.
+
+### Remaining embedded-CRLF limitation
+
+
+CRLF means a carriage return followed by a line feed (`\r\n`); LF is a line feed (`\n`). This test deliberately used CRLF inside a synthetic event to check how the CSV lookup handles unusual input. It does not mean VMware Vision requires CRLF or that the VMware systems use Windows. No collection setting or indexed event was changed to add it. A collector, relay, export or payload can introduce line endings independently of the sender's operating system, but the reported production sample established trailing whitespace, not embedded CRLF.
+
+The live Splunk test still returned no match for a synthetic `_raw` value containing embedded CRLF line endings, despite the script preserving those bytes and quoting the CSV fields. Plain single-line records, leading/trailing spaces and tabs, commas, quotes, Unicode and LF multiline records passed. This CRLF case is a known limitation of the tested external lookup path; do not treat 1.1.1 as a fix for every possible CSV matching problem. Retain the original raw record and investigate the search log if `lookup_missing` remains. Do not reindex or alter production collection solely to hide this condition.
+
+
+### Check the upgrade on each search peer
+
+Use the indexes and time range containing your known samples. Run a new search in both VMware Vision and Search & Reporting:
+
+```spl
+(index=vmware-esxi OR index=vmware-vcenter OR index=log-insight)
+sourcetype=vmware:vision:*
+| eval version=coalesce(parser_version,"MISSING"),
+       kind=coalesce(record_kind,"MISSING")
+| stats count AS events by splunk_server sourcetype version kind
+```
+
+Each normalized row should report version `1.1.1`. `unclassified` is an unsupported message shape, while `MISSING` requires checking lookup execution, matching and the knowledge bundle. A diagnostic does not need a VM identity. Unknown records remain visible; do not turn them into successful changes to improve a coverage percentage.

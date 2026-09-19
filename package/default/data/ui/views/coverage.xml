@@ -15,7 +15,7 @@
     </input>
   </fieldset>
   <search id="coverage_totals">
-    <query>`vmware_vision_events` | search vcenter=$vc|s$ | stats count AS events by parser_status parser_format record_kind</query>
+    <query>`vmware_vision_events` | eval vcenter=coalesce(vcenter,host,"unknown"), parser_status=coalesce(parser_status,"lookup_missing"), parser_format=coalesce(parser_format,"lookup_missing"), record_kind=coalesce(record_kind,"lookup_missing") | search vcenter=$vc|s$ | stats count AS events by parser_status parser_format record_kind</query>
     <earliest>$time.earliest$</earliest>
     <latest>$time.latest$</latest>
   </search>
@@ -37,7 +37,8 @@
           <h3>Onboard sources</h3>
           <p>Default search scope: <code>index=vmware</code>. Set the macro <code>vmware_vision_indexes</code> under Settings / Advanced search / Search macros when using other indexes.</p>
           <p>Use <code>vmware:vision:vcenter</code> for vCenter event syslog; <code>vmware:vision:aria</code> for Aria-forwarded syslog; <code>vmware:vision:esxi</code> for ESXi; <code>vmware:vision:json</code> for supported JSON event envelopes. Existing data requires the matching automatic lookup stanza on its current sourcetype.</p>
-          <p>Use a durable syslog receiver and monitored files or HEC for production. The deploy script configures TCP 1514 for vCenter, 1515 for Aria and 1516 for ESXi on the lab server. Restrict network access to your senders.</p>
+          <p>Use a durable syslog receiver and monitored files or HEC for production. Configure source assignment and forwarding through your existing collection process.</p>
+          <p><code>lookup_missing</code> means normalization fields were not returned. It is separate from <code>unclassified</code>, where the parser ran but did not recognize the message.</p>
           <p>The parser supports vCenter bracketed events, explicit JSON event fields and quoted key/value fields. Unknown ESXi and Aria messages remain searchable. Aria Operations appliance logs alone do not provide all VM lifecycle events.</p>
         </div>
       </html>

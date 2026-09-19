@@ -55,6 +55,7 @@ class DashboardContracts(unittest.TestCase):
         )
         self.assertIn("match(event_type", queries["VM event identity quality"])
         self.assertIn("`vmware_vision_audit`", queries["VM event identity quality"])
+        self.assertIn("lookup_missing", form.find("search/query").text)
 
     def test_acceleration_is_explicit_and_excludes_free_text(self):
         config = configparser.ConfigParser()
@@ -83,6 +84,7 @@ class DashboardContracts(unittest.TestCase):
         )
         for raw in [
             "Event [42] [...",
+            "Hostd[1]: [Originator@6876 sub=Vimsvc.ha-eventmgr] Event 42 : User root logged out",
             "vim.event.VmCreatedEvent",
             "eventType=VmCreatedEvent",
             '{"event_type":"VmCreatedEvent"}',

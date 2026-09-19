@@ -9,8 +9,8 @@ Copy the text below into two separate listings. The Summary, Details, Installati
 | Display name | VMware Vision for Splunk | VMware Vision Ingestion Add-on |
 | Package / app ID | `vmware_vision` | `TA-vmware-vision` |
 | Type | App | Add-on |
-| Version | 1.1.0 | 1.0.2 |
-| Upload file | `vmware_vision-1.1.0.tar.gz` | `TA-vmware-vision-1.0.2.tar.gz` |
+| Version | 1.1.1 | 1.0.2 |
+| Upload file | `vmware_vision-1.1.1.tar.gz` | `TA-vmware-vision-1.0.2.tar.gz` |
 | Author / publisher | Your existing Splunkbase publisher account; project author: Majid Ershadi | Same account |
 | Primary category | IT Operations | IT Operations |
 | Additional category, if offered | Security, Fraud & Compliance | Leave unset unless a more suitable ingestion category is available |
@@ -40,7 +40,7 @@ VMware Vision turns existing vCenter, ESXi and Aria syslog into a record of VM a
 
 The app includes VM history and change-audit dashboards, source coverage checks, a detailed VMware data model and a compact model for optional accelerated activity trends. Selected explicit event outcomes map into CIM Authentication and Change.
 
-VMware Vision uses logs you already collect. Version 1.1.0 does not poll VMware APIs, maintain complete live inventory or change VMware configuration. API collection may be considered for a future release; it is not included in this version.
+VMware Vision uses logs you already collect. Version 1.1.1 does not poll VMware APIs, maintain complete live inventory or change VMware configuration. API collection may be considered for a future release; it is not included in this version.
 
 ## 4. VMware Vision app: Details
 
@@ -81,7 +81,7 @@ VMware Vision is an independent project and is not an official VMware, Broadcom 
 
 ## 5. VMware Vision app: Installation
 
-1. Download `vmware_vision-1.1.0.tar.gz` from the GitHub release and verify its checksum against `SHA256SUMS.txt`. Do not install the GitHub source ZIP as a Splunk app.
+1. Download `vmware_vision-1.1.1.tar.gz` from the GitHub release and verify its checksum against `SHA256SUMS.txt`. Do not install the GitHub source ZIP as a Splunk app.
 2. Back up an existing app's local configuration before upgrading. On an independent search head or standalone instance, install through Apps → Manage Apps → Install app from file. Use the search head cluster deployer for an SHC.
 3. Install the ingestion TA on the first full parsing tier in a distributed raw-syslog path. A standalone instance with the full app already has these parsing settings.
 4. Create or select the destination index on the indexing tier. Configure VMware forwarding, collection and sourcetypes through your existing collection configuration. Neither package enables collection for you.
@@ -143,7 +143,9 @@ https://github.com/majidershadi/vmware-vision/blob/main/docs/TROUBLESHOOTING.md
 
 ## 7. VMware Vision app: release notes
 
-Version 1.1.0 adds scoped CIM Authentication and Change mappings and preserves native VMware operations in `vmware_action`. It corrects derived-field filtering, retains cross-app automatic lookup visibility and declares Python 3.9 and 3.13 runtimes. It also includes project branding, Apache 2.0 licensing and detailed deployment and source-build documentation.
+Version 1.1.1 fixes missing lookup results for events with boundary whitespace, recognizes explicit ESXi Hostd logout events, and classifies known Envoy, UI and SPS diagnostics more accurately. Setup and Coverage now keeps missing lookup results visible. The app retains the scoped CIM Authentication and Change mappings introduced in 1.1.0. Logout remains outside the Authentication mapping.
+
+Embedded CRLF within an event remains a known lookup matching limitation; see the troubleshooting guide. The ingestion TA is unchanged at 1.0.2.
 
 Before upgrading from 1.0.x, replace custom native `action` filters with `vmware_action`, review local lookup output lists and model overrides, and rebuild enabled VMware model summaries. Bundled dashboards already use the new field contract. Raw data does not need reindexing for these search-time changes.
 
@@ -218,7 +220,7 @@ If the source uses another supported sourcetype, substitute its exact name. Revi
 
 ## 13. Technical add-on: release notes
 
-Version 1.0.2 gives the TA its own beacon-and-VM icon and adds a dedicated configuration guide. Apache 2.0 licensing and enabled update checks are retained. Event boundaries, timestamp handling and character encoding are unchanged. No Python runtime, search-time lookup or enabled collection input has been added. It remains compatible with VMware Vision 1.1.0.
+Version 1.0.2 gives the TA its own beacon-and-VM icon and adds a dedicated configuration guide. Apache 2.0 licensing and enabled update checks are retained. Event boundaries, timestamp handling and character encoding are unchanged. No Python runtime, search-time lookup or enabled collection input has been added. It remains compatible with VMware Vision 1.1.1.
 
 ## 14. Contact and support text for both listings
 
@@ -235,7 +237,7 @@ Support is provided by the project maintainer through the public issue tracker. 
 | Field | Value |
 |---|---|
 | Source code | https://github.com/majidershadi/vmware-vision |
-| App download / release notes | https://github.com/majidershadi/vmware-vision/releases/tag/v1.1.0 |
+| App download / release notes | https://github.com/majidershadi/vmware-vision/releases/tag/v1.1.1 |
 | TA download / release notes | https://github.com/majidershadi/vmware-vision/releases/tag/ta-v1.0.2 |
 | Documentation | https://github.com/majidershadi/vmware-vision/blob/main/docs/INSTALLATION.md |
 | TA documentation | https://github.com/majidershadi/vmware-vision/blob/main/docs/TA_CONFIGURATION.md |
@@ -262,3 +264,8 @@ Reviewer notes for the TA:
 The earlier candidate passed AppInspect 4.3.1 on Linux, but Splunkbase separately rejected its disabled update-check setting. The corrected packages set `check_for_updates = true`, and the release preflight now checks this setting before AppInspect. Consult the reports and checksums supplied with the corrected archives; earlier reports describe earlier package bytes. Local inspection is not a claim that Splunkbase or Splunk Cloud has approved either package.
 
 The live validation used standalone Splunk Enterprise 10.4.1 and CIM 8.7.0. Fifty-five source tests passed under Splunk Python 3.9 and 3.13. Synthetic event checks confirmed one Authentication record, eleven Change records and four intentional exclusions. These are functional checks, not production load tests or a complete distributed/ES acceptance test.
+
+
+## App 1.1.1 patch notes
+
+Fixes missing lookup fields for records with leading or trailing whitespace, recognizes explicit Hostd logout events, improves known service diagnostic classification, and exposes missing lookup results in coverage charts. The original raw events remain unchanged. TA 1.0.2 needs no update. Rebuild affected accelerated summaries for historical corrections; reindexing is not required. Embedded CRLF lookup matching remains a documented limitation.
