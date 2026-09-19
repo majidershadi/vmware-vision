@@ -14,6 +14,10 @@ Start with a small time window and one source whose original event is available.
 | Different audit and summary totals | Check duplicate delivery and summary coverage; summaries are not audit deduplication |
 | Data missing only after an upgrade | Review local props, transform, fields, metadata and model overrides |
 
+## Distinguish missing fields from unsupported records
+
+The [coverage definitions and known 1.1.1 audit limitations](../README.md#reading-coverage-results) explain each label. In particular, missing VM identity on an event candidate is not the same as absent lookup output. The current parser can miss names supplied by the message, and diagnostic mentions of an event class can be misclassified as completed operations. Reconfiguration fragments can also produce an incorrect event ID from nested `key` values. These are unresolved code issues, not conditions corrected by this documentation update.
+
 ## Lookup errors outside VMware Vision
 
 If Splunk reports `Could not load lookup=LOOKUP-vmware_vision` or cannot find `vmware_lookup.py`, check effective configuration on the search head:

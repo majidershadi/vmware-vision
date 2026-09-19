@@ -48,6 +48,36 @@ For development, see [building from source](docs/BUILD.md), [parser design](docs
 
 `vmware_action` keeps native operation names such as `power_on` and `reconfigured`. For eligible CIM events, `action` contains the CIM value, such as `started`, `modified`, `success` or `failure`.
 
+## Reading coverage results
+
+VMware Vision is intended to help audit meaningful VM lifecycle, configuration and security events. Coverage charts describe the received syslog mix; they are not a score for audit accuracy. A busy source can produce many service messages with no VM operation to extract. Raw events remain searchable; an unsupported message does not by itself mean ingestion failed.
+
+| Field or label | Meaning | What to check |
+|---|---|---|
+| `lookup_missing` or a search placeholder such as `MISSING` | Expected normalization fields are absent. These labels are added by the dashboard or diagnostic search. | Lookup errors, parser errors, matching, local overrides and search-bundle versions on each peer. |
+| `record_kind=unclassified`, usually `parser_status=unmapped` | The parser returned a result but did not recognize a supported message shape. | Inspect a sample. It may be routine service output, a useful unsupported event or a fragment. |
+| `parser_status=unmapped_event_type` | An event-type name was extracted but has no mapped operation. | Verify the underlying record and report a sanitized example. It is not proof of a completed VM change. |
+| `record_kind=diagnostic` | A recognized service-log format. | Keep it for troubleshooting. Diagnostic does not mean harmless; service errors can matter. |
+| `identity_quality=missing` | No VM name, managed object ID or UUID was extracted. | On VM event candidates, compare with the raw message: data may be absent, ambiguous, incomplete or missed by the parser. |
+| `parser_status=mapped` | The parser selected a known operation. | Validate the VM, actor and outcome against the raw event. Mapping is not a guarantee that every field or classification is correct. |
+
+The VM identity panel evaluates VM event candidates, not all incoming syslog. Its missing identities therefore need investigation; routine non-VM traffic alone does not explain that panel. Reconfiguration's `message only` label means no structured change details were extracted. It does not establish that the source supplied none.
+
+### Known 1.1.1 audit limitations
+
+Production samples reviewed after release exposed these unresolved parser issues:
+
+- Name-first power messages such as `example-vm on host.example.test in DC is powered off` and `Message on example-vm ...` can retain their event type while losing the VM name.
+- InventoryMonitor diagnostics that only say `Event value type: vim.event.VmPoweredOffEvent` can be incorrectly mapped as completed power-off events and enter CIM Change. A `mapped` filter alone does not remove this case.
+- Reconfiguration sections named `Modified:`, `Added:` and `Deleted:` are not fully covered by the current detail extraction.
+- Incomplete bracketed event records can fall back to generic key/value extraction and incorrectly use a nested device/configuration `key` as `event_id`. Multiple stored records with the same header event ID and different portions of the body suggest fragmentation, but do not establish where it occurred. A closing bracket alone does not prove completeness.
+
+These issues require a parser update; this documentation change does not fix them. Version 1.1.1's whitespace lookup fix remains valid, but it does not resolve every missing identity or unsupported format. Check affected VM histories and CIM Change results against the original events before treating their counts or observed state as authoritative.
+
+The development priority is correct event identity, VM identity, outcome and supplied change details. Routine diagnostic classification is secondary. Fragment reassembly requires reliable origin/event/fragment information; joining nearby records by timestamp alone is unsafe. Acceleration improves query performance but cannot repair classification or incomplete content. No change to the ingestion TA, collection filtering or retention is made by this documentation update.
+
+See [troubleshooting](docs/TROUBLESHOOTING.md) for searches that distinguish missing lookup output from unsupported messages. Share sanitized examples through [GitHub Issues](https://github.com/majidershadi/vmware-vision/issues).
+
 ## Compatibility and limits
 
 The standalone validation environment uses Splunk Enterprise 10.4.1 with Splunk_SA_CIM 8.7.0. Runtime checks cover Python 3.9 and 3.13. Splunk 10.0.2 remains a compatibility target; distributed acceptance on that release is not claimed. On Splunk versions that support `python.required`, the highest installed declared runtime is selected. The legacy fallback is `python.version=python3.9`.

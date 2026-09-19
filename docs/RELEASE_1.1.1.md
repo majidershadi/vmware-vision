@@ -2,6 +2,10 @@
 
 This maintenance release fixes missing normalization fields on syslog records with leading or trailing whitespace. It also improves classification of the supplied ESXi and vCenter message shapes. The full app changes to 1.1.1; the ingestion TA remains 1.0.2 with exactly the same archive bytes.
 
+## Post-release findings
+
+Additional production samples exposed unresolved VM-name extraction, diagnostic event-type false positives and fragmented reconfiguration parsing. See the [current README](https://github.com/majidershadi/vmware-vision#known-111-audit-limitations) for details. The published 1.1.1 archives remain unchanged; this advisory does not claim those issues are fixed.
+
 ## Fixes
 
 - **CSV lookup matching:** quote the `_raw`, `host` and `sourcetype` input keys so boundary whitespace survives the external lookup round trip. Original raw text is preserved. Empty normalized outputs remain unquoted so existing missing-field checks and `coalesce` searches keep their behavior.
